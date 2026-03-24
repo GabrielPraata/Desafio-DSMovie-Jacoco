@@ -49,7 +49,7 @@ public class ScoreServiceTests {
 	@BeforeEach
 	void setUp() throws Exception {
 		score = ScoreFactory.createScoreEntity();
-		movie = MovieFactory.createMovieEntity();
+		movie = score.getId().getMovie();
 		user  = UserFactory.createUserEntity();
 		scoreDTO = new ScoreDTO(movie.getId(), score.getValue());
 		nonExistingMovieId = 2L;
@@ -65,11 +65,12 @@ public class ScoreServiceTests {
 	@Test
 	public void saveScoreShouldReturnMovieDTO() {
 
-		ScoreDTO scoreDTO = new ScoreDTO(nonExistingMovieId, score.getValue());
+		MovieDTO result = service.saveScore(scoreDTO);
 
-		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
-			service.saveScore(scoreDTO);
-		});
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(movie.getTitle(), result.getTitle());
+		Assertions.assertEquals(ScoreFactory.scoreValue, result.getScore());
+		Assertions.assertEquals(1, result.getCount());
 	}
 	
 	@Test
